@@ -1,0 +1,383 @@
+<html>
+
+<head>
+<title>MATA65 - Computação Gráfica</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<script id="shader-vs" type="x-shader/x-vertex">
+	attribute vec3 aVertexPosition;
+	attribute vec2 aVertexTexture;
+		
+	varying vec2 vTextureCoord;
+	
+	void main(void) {
+		gl_Position = vec4(aVertexPosition, 1.0);
+		vTextureCoord = aVertexTexture;
+	}
+</script>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+	precision mediump float;
+		
+	uniform sampler2D uSampler;
+	uniform int cor;
+	
+	varying vec2 vTextureCoord;
+
+	vec3 rgb_to_hsv(vec3 RGB)
+	{
+		float r = RGB.x;
+		float g = RGB.y;
+		float b = RGB.z;
+
+		float minChannel = min(r, min(g, b));
+		float maxChannel = max(r, max(g, b));
+
+		float h = 0.0;
+		float s = 0.0;
+
+		float v = maxChannel;
+
+		float delta = maxChannel - minChannel;
+
+		if (delta != 0.0) { 
+			s = delta / v;
+
+			if (r == v) h = (g - b) / delta;
+			else if (g == v) h = 2.0 + (b - r) / delta;
+			else /* b == v */ h = 4.0 + (r - g) / delta;
+		}
+
+		return vec3(h, s, v);
+	}
+
+	vec3 hsv_to_rgb(vec3 HSV)
+	{
+		vec3 RGB; /* = HSV.z; */
+
+		float h = HSV.x;
+		float s = HSV.y;
+		float v = HSV.z;
+
+		float i = floor(h);
+		float f = h - i;
+
+		float p = (1.0 - s);
+		float q = (1.0 - s * f);
+		float t = (1.0 - s * (1.0 - f));
+
+		if (i == 0.0) { RGB = vec3(1.0, t, p); }
+		else if (i == 1.0) { RGB = vec3(q, 1.0, p); }
+		else if (i == 2.0) { RGB = vec3(p, 1.0, t); }
+		else if (i == 3.0) { RGB = vec3(p, q, 1.0); }
+		else if (i == 4.0) { RGB = vec3(t, p, 1.0); }
+		else /* i == -1 */ { RGB = vec3(1.0, p, q); }
+
+		RGB *= v;
+
+		return RGB;
+	}
+		
+	void main(void) {	
+		vec4 c = texture2D(uSampler, vTextureCoord);
+		float cinza = (c.r + c.g + c.b)/3.0;
+		float r = c.r * 255.0;
+		float g = c.g * 255.0;
+		float b = c.b * 255.0;
+		float min = 256.0;
+		float max = 0.0;
+		float delta;
+		float h;
+		float s;
+		float v;
+		float i;
+		float f,p,q,t;
+
+		//gl_FragColor = vec4(cinza, cinza, cinza, 1.0);
+		if(cor == 0)//Primeira Tela
+		{
+			float r1 = c.r;
+			float g1 = c.g;
+			float b1 = c.b;
+
+			float minChannel ;
+			float maxChannel;
+
+			float h1 = 0.0;
+			float s1 = 0.0;
+			float v1 ;
+
+			float delta1 ;
+
+			if(r1 > maxChannel)
+				maxChannel = r1;
+			if(g1 > maxChannel)
+				maxChannel = g1;
+			if(b1 > maxChannel)
+				maxChannel = b1;
+
+			if(r < minChannel)
+				minChannel = r1;
+			if(g1 > minChannel)
+				minChannel = g1;
+			if(b1 > maxChannel)
+				minChannel = b1;
+
+			delta1 = maxChannel - minChannel;
+
+			v1 = maxChannel;
+
+
+			if (delta1 != 0.0) { 
+				s1 = delta1 / v1;
+
+				if (r1 == v1) h1 = (g1 - b1) / delta1;
+				else if (g1 == v1) h1 = 2.0 + (b1 - r1) / delta1;
+				else /* b == v */ h1 = 4.0 + (r1 - g1) / delta1;
+			}
+
+			vec3 RGB; /* = HSV.z; */
+
+			
+
+			float i1 = floor(h1);
+			float f1 = h1 - i1;
+
+			float p1 = 0.5*(1.0 - s1);
+			float q1 = 0.9*(1.0 - s1 * f1);
+			float t1 = 0.1*(1.0 - s1 * (1.0 - f1));
+
+			if (i1 == 0.0) { RGB = vec3(1.0, t1, p1); }
+			else if (i1 == 1.0) { RGB = vec3(q1, 1.0, p1); }
+			else if (i1 == 2.0) { RGB = vec3(p1, 1.0, t1); }
+			else if (i1 == 3.0) { RGB = vec3(p1, q1, 1.0); }
+			else if (i1 == 4.0) { RGB = vec3(t1, p1, 1.0); }
+			else /* i == -1 */ { RGB = vec3(1.0, p1, q1); }
+
+			RGB *= v1;
+
+			gl_FragColor = vec4(RGB, 1.0);
+
+			
+		}
+		if(cor == 1)// Segunda tela
+		{
+			//gl_FragColor = vec4(1.0+c.g, c.r, c.b, 1.0);			
+			//vec3 hsv = rgb_to_hsv(gl_FragColor.xyz);
+			//gl_FragColor = vec4(hsv_to_rgb(hsv), gl_FragColor.a);
+
+			float r1 = c.r;
+			float g1 = c.g;
+			float b1 = c.b;
+
+			float minChannel ;
+			float maxChannel;
+
+			float h1 = 0.0;
+			float s1 = 0.0;
+			float v1 ;
+
+			float delta1 ;
+
+			if(r1 > maxChannel)
+				maxChannel = r1;
+			if(g1 > maxChannel)
+				maxChannel = g1;
+			if(b1 > maxChannel)
+				maxChannel = b1;
+
+			if(r < minChannel)
+				minChannel = r1;
+			if(g1 > minChannel)
+				minChannel = g1;
+			if(b1 > maxChannel)
+				minChannel = b1;
+
+			delta1 = maxChannel - minChannel;
+
+			v1 = maxChannel;
+
+
+			if (delta1 != 0.0) { 
+				s1 = delta1 / v1;
+
+				if (r1 == v1) h1 = (g1 - b1) / delta1;
+				else if (g1 == v1) h1 = 2.0 + (b1 - r1) / delta1;
+				else /* b == v */ h1 = 4.0 + (r1 - g1) / delta1;
+			}
+
+			vec3 RGB; /* = HSV.z; */
+
+			
+
+			float i1 = floor(h1);
+			float f1 = h1 - i1;
+
+			float p1 = 1.5*(1.0 - s1);
+			float q1 = 0.1*(1.0 - s1 * f1);
+			float t1 = 0.3*(1.0 - s1 * (1.0 - f1));
+
+			if (i1 == 0.0) { RGB = vec3(1.0, t1, p1); }
+			else if (i1 == 1.0) { RGB = vec3(q1, 1.0, p1); }
+			else if (i1 == 2.0) { RGB = vec3(p1, 1.0, t1); }
+			else if (i1 == 3.0) { RGB = vec3(p1, q1, 1.0); }
+			else if (i1 == 4.0) { RGB = vec3(t1, p1, 1.0); }
+			else /* i == -1 */ { RGB = vec3(1.0, p1, q1); }
+
+			RGB *= v1;
+
+			gl_FragColor = vec4(RGB, 1.0);
+
+		}
+		if(cor == 2)//Quarta Tela
+		{
+			float r1 = c.r;
+			float g1 = c.g;
+			float b1 = c.b;
+
+			float minChannel ;
+			float maxChannel;
+
+			float h1 = 0.0;
+			float s1 = 0.0;
+			float v1 ;
+
+			float delta1 ;
+
+			if(r1 > maxChannel)
+				maxChannel = r1;
+			if(g1 > maxChannel)
+				maxChannel = g1;
+			if(b1 > maxChannel)
+				maxChannel = b1;
+
+			if(r < minChannel)
+				minChannel = r1;
+			if(g1 > minChannel)
+				minChannel = g1;
+			if(b1 > maxChannel)
+				minChannel = b1;
+
+			delta1 = maxChannel - minChannel;
+
+			v1 = maxChannel;
+
+
+			if (delta1 != 0.0) { 
+				s1 = delta1 / v1;
+
+				if (r1 == v1) h1 = (g1 - b1) / delta1;
+				else if (g1 == v1) h1 = 2.0 + (b1 - r1) / delta1;
+				else /* b == v */ h1 = 4.0 + (r1 - g1) / delta1;
+			}
+
+			vec3 RGB; /* = HSV.z; */
+
+			
+
+			float i1 = floor(h1);
+			float f1 = h1 - i1;
+
+			float p1 = 0.5*(1.0 - s1);
+			float q1 = 0.8*(1.0 - s1 * f1);
+			float t1 = 0.2*(1.0 - s1 * (1.0 - f1));
+
+			if (i1 == 0.0) { RGB = vec3(1.0, t1, p1); }
+			else if (i1 == 1.0) { RGB = vec3(q1, 1.0, p1); }
+			else if (i1 == 2.0) { RGB = vec3(p1, 1.0, t1); }
+			else if (i1 == 3.0) { RGB = vec3(p1, q1, 1.0); }
+			else if (i1 == 4.0) { RGB = vec3(t1, p1, 1.0); }
+			else /* i == -1 */ { RGB = vec3(1.0, p1, q1); }
+
+			RGB *= v1;
+
+			gl_FragColor = vec4(RGB, 1.0);
+			
+		}
+		if(cor == 3)// Terceira Tela
+		{
+			float r1 = c.r;
+			float g1 = c.g;
+			float b1 = c.b;
+
+			float minChannel ;
+			float maxChannel;
+
+			float h1 = 0.0;
+			float s1 = 0.0;
+			float v1 ;
+
+			float delta1 ;
+
+			if(r1 > maxChannel)
+				maxChannel = r1;
+			if(g1 > maxChannel)
+				maxChannel = g1;
+			if(b1 > maxChannel)
+				maxChannel = b1;
+
+			if(r < minChannel)
+				minChannel = r1;
+			if(g1 > minChannel)
+				minChannel = g1;
+			if(b1 > maxChannel)
+				minChannel = b1;
+
+			delta1 = maxChannel - minChannel;
+
+			v1 = maxChannel;
+
+
+			if (delta1 != 0.0) { 
+				s1 = delta1 / v1;
+
+				if (r1 == v1) h1 = (g1 - b1) / delta1;
+				else if (g1 == v1) h1 = 2.0 + (b1 - r1) / delta1;
+				else /* b == v */ h1 = 4.0 + (r1 - g1) / delta1;
+			}
+
+			vec3 RGB; /* = HSV.z; */
+
+			
+
+			float i1 = floor(h1);
+			float f1 = h1 - i1;
+
+			float p1 = 0.1*(1.0 - s1);
+			float q1 = 1.2*(1.0 - s1 * f1);
+			float t1 = 0.3*(1.0 - s1 * (1.0 - f1));
+
+			if (i1 == 0.0) { RGB = vec3(1.0, t1, p1); }
+			else if (i1 == 1.0) { RGB = vec3(q1, 1.0, p1); }
+			else if (i1 == 2.0) { RGB = vec3(p1, 1.0, t1); }
+			else if (i1 == 3.0) { RGB = vec3(p1, q1, 1.0); }
+			else if (i1 == 4.0) { RGB = vec3(t1, p1, 1.0); }
+			else /* i == -1 */ { RGB = vec3(1.0, p1, q1); }
+
+			RGB *= v1;
+
+			gl_FragColor = vec4(RGB, 1.0);
+
+		}
+		}
+			
+</script>
+
+<script type="text/javascript" src="../lib/webgl-utils.js"></script>
+<script type="text/javascript" src="../lib/shaders.js"></script>
+<script type="text/javascript" src="videoCapture.js"></script>
+
+</head>
+
+<body onload="webGLStart();">
+    <h1>Trabalho</h1><br />
+    <p>Captura e manipulação de video em WebGL.</p>
+    <br/>
+    <div id="output"> </div>
+    <br/>
+	<canvas id="videoGL" width="700" height="700" style="visibility: visible;"></canvas>
+	<video id="monitor" autoplay width="320" height="240" style="visibility: hidden;"></video>
+	<canvas id="videoImage" width="256" height="256" style="visibility: hidden;"></canvas>
+</body>
+
+</html>

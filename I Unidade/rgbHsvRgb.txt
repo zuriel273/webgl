@@ -1,0 +1,61 @@
+float r1 = c.r;
+			float g1 = c.g;
+			float b1 = c.b;
+
+			float minChannel ;
+			float maxChannel;
+
+			float h1 = 0.0;
+			float s1 = 0.0;
+			float v1 ;
+
+			float delta1 ;
+
+			if(r1 > maxChannel)
+				maxChannel = r1;
+			if(g1 > maxChannel)
+				maxChannel = g1;
+			if(b1 > maxChannel)
+				maxChannel = b1;
+
+			if(r < minChannel)
+				minChannel = r1;
+			if(g1 > minChannel)
+				minChannel = g1;
+			if(b1 > maxChannel)
+				minChannel = b1;
+
+			delta1 = maxChannel - minChannel;
+
+			v1 = maxChannel;
+
+
+			if (delta1 != 0.0) { 
+				s1 = delta1 / v1;
+
+				if (r1 == v1) h1 = (g1 - b1) / delta1;
+				else if (g1 == v1) h1 = 2.0 + (b1 - r1) / delta1;
+				else /* b == v */ h1 = 4.0 + (r1 - g1) / delta1;
+			}
+
+			vec3 RGB; /* = HSV.z; */
+
+			
+
+			float i1 = floor(h1);
+			float f1 = h1 - i1;
+
+			float p1 = (1.0 - s1);
+			float q1 = (1.0 - s1 * f1);
+			float t1 = (1.0 - s1 * (1.0 - f1));
+
+			if (i1 == 0.0) { RGB = vec3(1.0, t1, p1); }
+			else if (i1 == 1.0) { RGB = vec3(q1, 1.0, p1); }
+			else if (i1 == 2.0) { RGB = vec3(p1, 1.0, t1); }
+			else if (i1 == 3.0) { RGB = vec3(p1, q1, 1.0); }
+			else if (i1 == 4.0) { RGB = vec3(t1, p1, 1.0); }
+			else /* i == -1 */ { RGB = vec3(1.0, p1, q1); }
+
+			RGB *= v1;
+
+			gl_FragColor = vec4(RGB, 1.0);
